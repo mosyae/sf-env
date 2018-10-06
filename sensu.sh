@@ -1,6 +1,7 @@
 echo "****** Start SENSU install********"
 sudo yum update
 sudo yum -y install net-tools
+sudo yum -y install telnet
 sudo yum install epel-release -y
 echo '[sensu]
 name=sensu
@@ -23,17 +24,29 @@ echo '{
     "port": 4567
   }
 }' | sudo tee /etc/sensu/config.json
-#COnfigure Client * Run the following to set up a minimal client config:
+#COnfigure Client * :
+echo '{
+  "transport": {
+    "name": "redis",
+	"reconnect_on_error": true
+  }
+}' | sudo tee /etc/sensu/conf.d/transport.json
 echo '{
   "client": {
-    "name": "sensu",
-    "address": "192.168.100.100",
+    "name": "sf-mngdn1",
+    "address": "192.168.100.11",
     "environment": "development",
     "subscriptions": [
       "default"
     ]
   }
 }' |sudo tee /etc/sensu/conf.d/client.json
+echo '{
+  "redis": {
+    "host": "192.168.100.100",
+    "port": 6379
+  }
+}' |sudo tee /etc/sensu/conf.d/redis.json
 #Configure Dashboard
 echo '{
    "sensu": [

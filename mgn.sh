@@ -3,6 +3,7 @@ echo "*********Install neeeded software ***********"
 sudo yum -y update
 sudo yum -y install wget
 sudo yum -y install vim
+sudo yum -y install telnet
 sudo yum -y install net-tools
 #Configure sshd to allow access from other machine
 echo "*********Allow ssh ***********" 
