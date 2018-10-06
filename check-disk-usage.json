@@ -1,0 +1,9 @@
+{
+  "checks": {
+    "disk_check": {
+      "command": "check-disk-usage.rb -w 70 -c 80",
+      "standalone": true,
+      "interval": 600
+    }
+  }
+}

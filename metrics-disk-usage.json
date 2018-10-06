@@ -1,0 +1,13 @@
+# disk metrics collection
+{
+  "checks": {
+    "metrics_disk-usage": {
+      "type": "metric",
+      "command": "metrics-disk-usage.rb -l --scheme :::name:::.disk_usage",
+      "interval": 60,
+      "output_format": "graphite_plaintext",
+      "subscribers": [ "development" ],
+      "handlers": [ "graphite" ]
+    }
+  }
+}
