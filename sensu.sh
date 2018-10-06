@@ -14,7 +14,7 @@ sudo sed -i.bak -e '0,/protected-mode yes/ s/protected-mode yes/protected-mode n
 sudo systemctl enable redis
 sudo systemctl start redis
 sudo yum install sensu uchiwa -y
-#Configure Server * Run the following to set up a minimal client config:
+#Configure Server * 
 echo '{
   "transport": {
     "name": "redis"

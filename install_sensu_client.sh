@@ -6,7 +6,7 @@ baseurl=https://sensu.global.ssl.fastly.net/yum/$releasever/$basearch/
 gpgcheck=0
 enabled=1' | sudo tee /etc/yum.repos.d/sensu.repo
 sudo yum install sensu
-#COnfigure Client * :
+#Configure Client * :
 echo '{
   "transport": {
     "name": "redis",
@@ -32,6 +32,7 @@ echo '{
 sudo chown -R sensu:sensu /etc/sensu
 sudo systemctl enable sensu-{api,client}
 sudo systemctl start sensu-{api,client}
+#Install checks
 sudo sensu-install -p cpu-checks  
 sudo sensu-install -p disk-checks  
 sudo sensu-install -p memory-checks  
