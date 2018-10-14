@@ -1,8 +1,12 @@
+#!/bin/sh
+echo "****** Sset Time zone********"
+sudo timedatectl set-timezone Asia/Jerusalem
 echo "****** Start SENSU install********"
 sudo yum update
+sudo yum -y vim
 sudo yum -y install net-tools
 sudo yum -y install telnet
-sudo yum install epel-release -y
+sudo yum -y install epel-release -y
 echo '[sensu]
 name=sensu
 baseurl=https://sensu.global.ssl.fastly.net/yum/$releasever/$basearch/
@@ -11,6 +15,7 @@ enabled=1' | sudo tee /etc/yum.repos.d/sensu.repo
 sudo yum install redis -y
 # Now edit /etc/redis.conf file and change "protected-mode yes" to "protected-mode no"
 sudo sed -i.bak -e '0,/protected-mode yes/ s/protected-mode yes/protected-mode no/' /etc/redis.conf
+sudo sed -i.bak -e 's/bind 127.0.0.1/bind 192.168.100.100/' /etc/redis.conf
 sudo systemctl enable redis
 sudo systemctl start redis
 sudo yum install sensu uchiwa -y
@@ -33,8 +38,8 @@ echo '{
 }' | sudo tee /etc/sensu/conf.d/transport.json
 echo '{
   "client": {
-    "name": "sf-mngdn1",
-    "address": "192.168.100.11",
+    "name": "sensu",
+    "address": "192.168.100.100",
     "environment": "development",
     "subscriptions": [
       "default"

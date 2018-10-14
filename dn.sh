@@ -1,4 +1,6 @@
 #!/bin/sh
+echo "****** Sset Time zone********"
+sudo timedatectl set-timezone Asia/Jerusalem
 echo "*********Install neeeded software ***********" 
 sudo yum -y update
 sudo yum -y install wget
