@@ -1,5 +1,13 @@
 servers=[
 {
+  :hostname => "sensu",
+  :ip => "192.168.100.100",
+  :box => "centos/7",
+  :ram => 2048,
+  :cpu => 2,
+  :provisions => ["sensu.sh"]
+},
+{
   :hostname => "sf-mngdn1",
   :ip => "192.168.100.11",
   :box => "centos/7",
@@ -22,14 +30,6 @@ servers=[
   :ram => 5120,
   :cpu => 2,
   :provisions => ["mgn.sh"]
-},
-{
-  :hostname => "sensu",
-  :ip => "192.168.100.100",
-  :box => "centos/7",
-  :ram => 2048,
-  :cpu => 2,
-  :provisions => ["sensu.sh"]
 }
 ]
 
