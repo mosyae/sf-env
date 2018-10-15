@@ -41,9 +41,10 @@ sudo sed -i '1 s/^/#/' /etc/hosts
 sudo -- sh -c -e "echo '192.168.100.11    sf-mngdn1' >> /etc/hosts"
 sudo -- sh -c -e "echo '192.168.100.12    sf-mngdn2' >> /etc/hosts"
 sudo -- sh -c -e "echo '192.168.100.13    sf-mngdn3' >> /etc/hosts"
+sudo -- sh -c -e "echo '192.168.100.100   sensu' >> /etc/hosts"
 
 
-#====Disable THP https://blacksaildivision.com/how-to-disable-transparent-huge-pages-on-centos
+#====Disable THP - required by Cloudera  https://blacksaildivision.com/how-to-disable-transparent-huge-pages-on-centos
 echo 'echo "[Unit]" > /etc/systemd/system/disable-thp.service' | sudo -s
 echo 'echo "Description=Disable Transparent Huge Pages (THP)" >> /etc/systemd/system/disable-thp.service' | sudo -s
 echo 'echo "" >> /etc/systemd/system/disable-thp.service' | sudo -s
@@ -56,7 +57,7 @@ echo 'echo "WantedBy=multi-user.target" >> /etc/systemd/system/disable-thp.servi
 sudo systemctl daemon-reload
 sudo systemctl start disable-thp
 sudo systemctl enable disable-thp
-#========== Changes Swap settings
+#========== Changes Swap settings - recommented settings for Cloudera
 echo 'echo "vm.swappiness = 10" >> /etc/sysctl.conf' | sudo -s
 #======== REBOOT ===============
 echo "**********Reboot $HOSTNAME **********"

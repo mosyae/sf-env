@@ -1,5 +1,7 @@
+#!/bin/sh
 #http://roobert.github.io/2015/11/09/Sensu-What/
 #https://wecode.wepay.com/posts/sensu-at-wepay
+ip="$(ifconfig | grep -A 1 'eth1' | grep inet | awk '{print($2)}')"
 echo '[sensu]
 name=sensu
 baseurl=https://sensu.global.ssl.fastly.net/yum/$releasever/$basearch/
@@ -15,8 +17,8 @@ echo '{
 }' | sudo tee /etc/sensu/conf.d/transport.json
 echo '{
   "client": {
-    "name": "sf-mngdn1",
-    "address": "192.168.100.11",
+    "name": "$HOSTNAME",
+    "address": "$ip",
     "environment": "development",
     "subscriptions": [
       "default"

@@ -1,9 +1,8 @@
-# set Warning on 80% of Memory Usage , set Critical on 90%
 {
   "checks": {
     "memory_check": {
       "command": "check-memory-percent.rb -w 80 -c 90",
-      "subscribers": [ "development" ],
+      "subscribers": ["default"],
       "interval": 60
     }
   }

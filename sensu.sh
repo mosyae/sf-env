@@ -67,6 +67,10 @@ echo '{
    }
  }' |sudo tee /etc/sensu/uchiwa.json
 sudo chown -R sensu:sensu /etc/sensu
+#Copy checks from /vagrant to the client
+sudo cp /vagrant/check-cpu.json /etc/sensu/conf.d/
+sudo cp /vagrant/check-disk-usage.json /etc/sensu/conf.d/
+sudo cp /vagrant/check-memory-percent.json /etc/sensu/conf.d/
 #Start sensu
 sudo systemctl enable sensu-{server,api,client}
 sudo systemctl start sensu-{server,api,client}
