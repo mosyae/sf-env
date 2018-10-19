@@ -13,6 +13,16 @@ sudo yum -y install net-tools
 echo "*********Allow ssh ***********"
 sudo sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_config
 sudo systemctl restart sshd
+#***********Create cron job to sync time after hybernate and vm clock stops ticking
+sudo mkdir -p /opt/devops_scripts
+echo '
+#Sync the time with the NTP server for the first time
+sudo ntpdate -u 192.168.100.1 #IP address of the laptop Windows ntp
+#Sync harware clock with thesystem clock
+sudo hwclock --systohc
+' | sudo tee /opt/devops_scripts/sync_time_cron.sh
+sudo chmod +x /opt/devops_scripts/sync_time_cron.sh
+(crontab -l 2>/dev/null; echo "*/2 * * * * /opt/devops_scripts/sync_time_cron.sh") | crontab -
 #=================================
 # Cloudera requirements==============
 #======================
@@ -193,7 +203,7 @@ echo '
   "checks": {
     "system_cpu_metrics": {
       "type": "metric",
-      "command": "/opt/sensu/embedded/bin/metrics-cpu.rb --scheme sensu.:::service|undefined:::.:::environment|undefined:::.:::zone|undefined:::.:::name:::.cpu",
+      "command": "/opt/sensu/embedded/bin/metrics-cpu.rb",
       "subscribers": [
         "default"
       ],

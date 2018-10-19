@@ -1,12 +1,11 @@
-# memory metrics collection
 {
   "checks": {
     "metrics_memory-usage": {
       "type": "metric",
-      "command": "metrics-memory.rb --scheme :::name:::.memory_usage",
+      "command": "metrics-memory.rb",
       "interval": 60,
       "output_format": "graphite_plaintext",
-      "subscribers": [ "development" ],
+      "subscribers": [ "default" ],
       "handlers": [ "graphite" ]
     }
   }
