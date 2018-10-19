@@ -2,7 +2,7 @@
   "checks": {
     "metrics_disk-usage": {
       "type": "metric",
-      "command": "metrics-disk-usage.rb -l -x tmpfs,fuse,cgroup,overlay,nsfs,debugfs,tracefs,aufs -p /run/docker/netns",
+      "command": "metrics-disk-usage.rb -l -i tmpfs,fuse,cgroup,overlay,nsfs,debugfs,tracefs,aufs,/run/docker/netns",
       "interval": 60,
       "output_format": "graphite_plaintext",
       "subscribers": [ "default" ],
