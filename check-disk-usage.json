@@ -1,7 +1,7 @@
 {
   "checks": {
     "disk_check": {
-      "command": "check-disk-usage.rb -w 70 -c 80",
+      "command": "check-disk-usage.rb -w 70 -c 80  -x tmpfs,fuse,cgroup,overlay,nsfs,debugfs,tracefs,aufs -p /run/docker/netns",
       "subscribers": [
         "default"
       ],

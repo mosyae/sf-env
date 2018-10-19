@@ -51,6 +51,7 @@ sudo yum -y vim
 sudo yum -y install net-tools
 sudo yum -y install telnet
 sudo yum -y install epel-release -y
+sudo yum install gcc-c++ -y #needed for Sensu plugins-graphite install
 echo '[sensu]
 name=sensu
 baseurl=https://sensu.global.ssl.fastly.net/yum/$releasever/$basearch/
@@ -114,6 +115,67 @@ echo '{
 sudo cp /vagrant/check-cpu.json /etc/sensu/conf.d/
 sudo cp /vagrant/check-disk-usage.json /etc/sensu/conf.d/
 sudo cp /vagrant/check-memory-percent.json /etc/sensu/conf.d/
+#Install docker
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+sudo systemctl enable docker
+sudo systemctl start docker
+#Start Grafite with docker
+sudo mkdir /data
+sudo docker run -d\
+ --name graphite\
+ --restart=always\
+ -v /data/graphite:/data \
+ -p 80:80\
+ -p 2003-2004:2003-2004\
+ -p 2023-2024:2023-2024\
+ -p 8125:8125/udp\
+ -p 8126:8126\
+ graphiteapp/graphite-statsd
+#Configure handler for Grafite
+sudo mkdir /etc/sensu/conf.d/handlers
+echo '
+{
+  "handlers": {
+    "graphite": {
+      "type": "tcp",
+      "mutator": "only_check_output",
+      "timeout": 30,
+      "socket": {
+        "host": "192.168.100.100",
+        "port": 2003
+      }
+    }
+  }
+}' | sudo tee /etc/sensu/conf.d/handlers/graphite.json
+sensu-install -p sensu-plugins-graphite
+sudo mkdir /etc/sensu/conf.d/mutators
+echo '
+{
+  "mutators": {
+    "graphite_mutator": {
+      "command": "/opt/sensu/embedded/bin/mutator-graphite.rb",
+      "timeout": 10
+    }
+  }
+}' | sudo tee /etc/sensu/conf.d/mutators/graphite_mutator.json
+echo '
+{
+  "checks": {
+    "system_cpu_metrics": {
+      "type": "metric",
+      "command": "/opt/sensu/embedded/bin/metrics-cpu.rb --scheme sensu.:::service|undefined:::.:::environment|undefined:::.:::zone|undefined:::.:::name:::.cpu",
+      "subscribers": [
+        "default"
+      ],
+      "handlers": [
+        "graphite"
+      ],
+      "interval": 60,
+      "ttl": 180
+    }
+  }
+}' | sudo tee /etc/sensu/conf.d/cpu_metrics.json
 #Configure Dashboard
 echo '{
    "sensu": [

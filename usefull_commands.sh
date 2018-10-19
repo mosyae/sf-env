@@ -57,6 +57,8 @@ sudo systemctl start cloudera-scm-server-db
 sleep 30
 sudo systemctl start cloudera-scm-server
 
+#check/validate Json file
+python -m json.tool graphite.json
 
 cd ~
 wget http://192.168.100.1/cloudera/cm5/redhat/7/x86_64/cm/5.14.2/RPMS/x86_64/oracle-j2sdk1.7-1.7.0%2Bupdate67-1.x86_64.rpm
