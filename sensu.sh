@@ -18,16 +18,45 @@ sudo systemctl restart sshd
 #======================
 # NTP - time server
 # To configre a local NTP server in Windows: https://www.hellpc.net/how-to-make-your-computer-a-time-server-ntp-server-without-any-software/
-echo "**********Configure NTP server**********"
-sudo yum -y install ntp
-sudo sed -i 's/0\.centos\.pool\.ntp\.org iburst/192.168.100.1/g' /etc/ntp.conf
-sudo sed -i 's/1\.centos\.pool\.ntp\.org iburst/192.168.100.1/g' /etc/ntp.conf
-sudo sed -i 's/2\.centos\.pool\.ntp\.org iburst/192.168.100.1/g' /etc/ntp.conf
-sudo sed -i 's/3\.centos\.pool\.ntp\.org iburst/192.168.100.1/g' /etc/ntp.conf
-sudo systemctl enable ntpd
-sudo systemctl restart ntpd
-sudo ntpdate -u 192.168.100.1 #for home laptop
+#Sync the time with the NTP server for the first time
+sudo ntpdate -u 192.168.100.1 #IP address of the laptop Windows ntp
+#Sync harware clock with thesystem clock
 sudo hwclock --systohc
+#Configre OpenNTP service (there are problems with ntpd
+# Source https://www.cyberciti.biz/faq/openntpd-on-centos-rhel-fedora-linux/
+cd /tmp
+wget http://ftp3.usa.openbsd.org/pub/OpenBSD/OpenNTPD/openntpd-6.0p1.tar.gz
+tar -zxvf openntpd-6.0p1.tar.gz
+cd openntpd-6.0p1
+./configure
+make
+sudo make install
+sudo groupadd _ntp
+sudo useradd -g _ntp -s /sbin/nologin -d /var/empty/openntpd -c 'OpenNTP daemon' _ntp
+sudo mkdir -p /var/empty/openntpd
+sudo chown 0 /var/empty/openntpd
+sudo chgrp 0 /var/empty/openntpd
+sudo chmod 0755 /var/empty/openntpd
+echo '
+[Unit]
+Description=OpenNTP Daemon
+After=network.target
+Conflicts=systemd-timesyncd.service
+
+[Service]
+Type=forking
+ExecStart=/usr/local/sbin/ntpd -s
+
+[Install]
+WantedBy=multi-user.target
+'| sudo tee /usr/lib/systemd/system/openntpd.service
+echo '
+listen on *
+server 192.168.100.1
+sensor *
+' | sudo tee /usr/local/etc/ntpd.conf
+sudo systemctl start openntpd.service
+sudo systemctl enable openntpd
 #=== Disbale firewall
 echo "**********Disable firewall**********"
 sudo systemctl stop firewalld
